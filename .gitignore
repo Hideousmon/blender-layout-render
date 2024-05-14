@@ -159,7 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 temp_test/
-*.blender
-*.blender*
+*.blend
+*.blend*
 !bpycanvas/base.blend
 learning_recordings.md
+*.png

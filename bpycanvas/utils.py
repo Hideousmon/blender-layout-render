@@ -6,6 +6,13 @@ def start_blender():
     bpy.ops.wm.open_mainfile(filepath=current_folder_path + "/base.blend")
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete()
+    for material in bpy.data.materials:
+        if not material.users:
+            bpy.data.materials.remove(material)
+
+    for texture in bpy.data.textures:
+        if not texture.users:
+            bpy.data.textures.remove(texture)
 
 def save_blender(filepath):
     if os.path.exists(filepath):
