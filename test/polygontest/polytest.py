@@ -9,6 +9,20 @@ if __name__ == "__main__":
     bpy.ops.mesh.primitive_plane_add(size=50)
     plane = bpy.context.active_object
 
+    # add poly
+    vertices = [(1.0, 1.0, 4.0), (1.0, -1.0, 4.0), (-1.0, -1.0, 4.0), (-1.0, 1.0, 4.0)]
+    edges = []
+    faces = [(0, 1, 2, 3)]
+
+    mesh = bpy.data.meshes.new(name="Polygon")
+    mesh.from_pydata(vertices, edges, faces)
+    mesh.update()
+
+    poly = bpy.data.objects.new(name="PolygonObject", object_data=mesh)
+
+    # bpy.context.scene.collection.objects.link(obj)
+    bpy.context.collection.objects.link(poly)
+
     # add light
     light_data = bpy.data.lights.new("light", type = "SUN")
     light = bpy.data.objects.new("light", light_data)
@@ -61,7 +75,7 @@ if __name__ == "__main__":
     scene = bpy.context.scene
     scene.camera = cam
     scene.render.image_settings.file_format="PNG"
-    scene.render.filepath = 'D:/GithubProjects/blender-pyscripts-learning/test/rendertest/images/test.png'
+    scene.render.filepath = 'D:/GithubProjects/blender-pyscripts-learning/test/polygontest/images/test.png'
     scene.render.resolution_x = 480
     scene.render.resolution_y = 320
 

@@ -36,4 +36,4 @@ if __name__ == "__main__":
 
     bpy.ops.render.render('INVOKE_DEFAULT',write_still=True)
 
-    save_blender("./test.blender")
+    save_blender("./test.blend")
