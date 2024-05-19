@@ -26,7 +26,9 @@ def save_blender(filepath):
     bpy.ops.wm.quit_blender()
 
 def render(filename, scene_cam, resolution_x = 480, resolution_y = 320, use_cuda = True):
+    bpy.context.window_manager.windows.update()
     bpy.context.scene.render.engine = 'CYCLES'
+    bpy.context.scene.render.film_transparent = True
     if use_cuda:
         bpy.context.scene.cycles.device = 'GPU'
         cycles_prefs = bpy.context.preferences.addons['cycles'].preferences
@@ -43,6 +45,7 @@ def render(filename, scene_cam, resolution_x = 480, resolution_y = 320, use_cuda
     scene = bpy.context.scene
     scene.camera = scene_cam
     scene.render.image_settings.file_format = "PNG"
+    scene.render.image_settings.color_mode = 'RGBA'
     scene.render.filepath = filename
     scene.render.resolution_x = resolution_x
     scene.render.resolution_y = resolution_y

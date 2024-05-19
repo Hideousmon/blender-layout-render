@@ -1,91 +1,29 @@
 import bpy
 import math
-from bpycanvas import save_blender, start_blender, render
+from bpycanvas import *
 
 if __name__ == "__main__":
     start_blender()
-    # objectives
-    # bpy.ops.mesh.primitive_cube_add(size=3, location=(0, 0, 1.5))
-    # cube = bpy.context.active_object
-    # background
-    bpy.ops.mesh.primitive_plane_add(size=50)
-    plane = bpy.context.active_object
 
-    # add arrow
-    # 创建箭杆（圆柱体）
-    bpy.ops.mesh.primitive_cylinder_add(
-        radius=0.05,  # 箭杆半径
-        depth=2,  # 箭杆长度
-        location=(0, 0, 1)  # 将箭杆位置设置在世界中心（稍微向上移动）
-    )
-    arrow_shaft = bpy.context.object
+    backgroud = Waveguide(Point(-2, 0), Point(2, 0), width=2, z_start=-0.4, z_end=0.4, material=SiO2)
+    backgroud_bpy = backgroud.draw()
 
-    # 创建箭头（圆锥）
-    bpy.ops.mesh.primitive_cone_add(
-        radius1=0.15,  # 底部半径
-        depth=0.5,  # 高度
-        location=(0, 0, 2.25)  # 将圆锥位置设置在箭杆顶部
-    )
-    arrow_head = bpy.context.object
+    wg = Waveguide(Point(-2, 0), Point(2, 0), width=1, z_start=-0.11, z_end=0.11, material=Si)
+    wg_bpy = wg.draw()
 
-    # 组合箭杆和箭头
-    bpy.ops.object.select_all(action='DESELECT')
-    arrow_shaft.select_set(True)
-    arrow_head.select_set(True)
-    bpy.context.view_layer.objects.active = arrow_shaft
-    bpy.ops.object.join()  # 将箭杆和箭头组合成一个对象
+    arrow = Arrow(Point(-1.8, 0), Point(-1.2, 0), width=0.05, z_start=0.25, z_end=0.25, material=BrownArrow)
+    arrow_bpy = arrow.draw()
 
-    # 重命名组合后的箭头对象
-    arrow = bpy.context.object
-    arrow.name = "Arrow"
-    arrow.rotation_euler = (math.radians(-90), 0, 0)
+    source = Plane(Point(-1.5, 0), width=1.5, height=0.8, z_center=0, material=Source)
+    source_bpy = source.draw()
 
+    monitor = Plane(Point(1.5, 0), width=1.5, height=0.8, z_center=0, material=Monitor)
+    monitor_bpy = monitor.draw()
 
-    # add light
-    light_data = bpy.data.lights.new("light", type = "SUN")
-    light = bpy.data.objects.new("light", light_data)
-    bpy.context.collection.objects.link(light)
-    light.location = (3, -4, 5)
-    light.data.energy = 200.0
+    cam = add_camera(wg_bpy, angle=0, distance=8, light_distance=10, light_energy=10)
 
-    # add camera
-    cam_dat = bpy.data.cameras.new('camera')
-    cam = bpy.data.objects.new('camera', cam_dat)
-    cam.location = (25, -3, 20)
-    constraint = cam.constraints.new(type='TRACK_TO')
-    constraint.target = arrow
-
-    bpy.context.collection.objects.link(cam)
-
-    # add material cube
-    material = bpy.data.materials.new(name="Material")
-    material.use_nodes = True
-    mat_nodes = material.node_tree.nodes
-    mat_links = material.node_tree.links
-    arrow.data.materials.append(material)
-
-    mat_nodes["Principled BSDF"].inputs["Metallic"].default_value = 1.0
-    mat_nodes["Principled BSDF"].inputs["Base Color"].default_value = [255 / 255.0,
-                                                                       97 / 255.0,
-                                                                       3 / 255.0,
-                                                                       1.0]
-    mat_nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.167
-
-    # add material plane
-    material = bpy.data.materials.new(name="Material")
-    material.use_nodes = True
-    mat_nodes = material.node_tree.nodes
-    mat_links = material.node_tree.links
-    plane.data.materials.append(material)
-
-    mat_nodes["Principled BSDF"].inputs["Base Color"].default_value = [0.01,
-                                                                       0.065,
-                                                                       0.800,
-                                                                       1.0]
-    mat_nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.5
-
-    bpy.context.window_manager.windows.update()
-
-    render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
+    render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam,
+           resolution_x=1920, resolution_y=1080)
+    # render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
 
     save_blender("./test.blend")
