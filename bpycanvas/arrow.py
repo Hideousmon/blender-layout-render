@@ -77,6 +77,7 @@ class Arrow:
             mat_nodes["Principled BSDF"].inputs["Roughness"].default_value = self.material["Roughness"]
             mat_nodes["Principled BSDF"].inputs["IOR"].default_value = self.material["IOR"]
             mat_nodes["Principled BSDF"].inputs["Alpha"].default_value = self.material["Alpha"]
+            material.diffuse_color = self.material["Diffusion Color"]
         if not (self.rename == None):
             arrow.name = self.rename
         else:

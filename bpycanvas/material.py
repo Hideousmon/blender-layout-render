@@ -6,6 +6,7 @@ Si = {
     "Metallic": 0.5,
     "IOR": 1.0,
     "Alpha": 1,
+    "Diffusion Color": [218/255, 0/255, 0/255, 1],
 }
 
 SiO2 = {
@@ -15,6 +16,7 @@ SiO2 = {
     "Metallic": 0.0,
     "IOR": 1.0,
     "Alpha": 0.1,
+    "Diffusion Color": [0.537, 0.493, 0.8, 0.1],
 }
 
 Source = {
@@ -24,7 +26,7 @@ Source = {
     "Metallic": 0.0,
     "IOR": 1.5,
     "Alpha": 0.5,
-
+    "Diffusion Color": [204/255, 110/255, 82/255, 0.5],
 }
 
 Monitor = {
@@ -34,6 +36,7 @@ Monitor = {
     "Metallic": 0.0,
     "IOR": 1.5,
     "Alpha": 0.5,
+    "Diffusion Color": [250/255, 157/255, 90/255, 0.5],
 }
 
 BrownArrow = {
@@ -43,4 +46,5 @@ BrownArrow = {
     "Metallic": 0.0,
     "IOR": 1.5,
     "Alpha": 0.9,
+    "Diffusion Color": [0/255, 0/255, 218/255, 0.9],
 }
