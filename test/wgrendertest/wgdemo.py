@@ -20,10 +20,13 @@ if __name__ == "__main__":
     monitor = Plane(Point(1.5, 0), width=1.5, height=0.8, z_center=0, material=Monitor)
     monitor_bpy = monitor.draw()
 
-    cam = add_camera(wg_bpy, angle=0, distance=8, light_distance=10, light_energy=10)
+    # cam = add_camera(wg_bpy, angle=0, distance=8, light_distance=10, light_energy=10)
 
-    render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam,
-           resolution_x=1920, resolution_y=1080)
-    # render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
+    # cycles_render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam,
+    #        resolution_x=1920, resolution_y=1080)
+    # cycles_render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
+
+    cam = add_workbench_camera(wg_bpy, view_port=TOPFRONT)
+    workbench_render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
 
     save_blender("./test.blend")
