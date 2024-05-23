@@ -3,5 +3,8 @@ from .waveguide import Waveguide
 from .camera import add_camera, add_workbench_camera
 from .arrow import Arrow
 from .plane import Plane
+from .filledpattern import Circle, Rectangle
+from .pixelsregion import CirclePixelsRegion, RectanglePixelsRegion
+from .boolean import cut
 
 from .utils import *
