@@ -8,5 +8,6 @@ from .pixelsregion import CirclePixelsRegion, RectanglePixelsRegion
 from .boolean import cut
 from .polygon import Polygon
 from .bend import Bend
+from .quarbend import QuarBend, AQuarBend
 
 from .utils import *

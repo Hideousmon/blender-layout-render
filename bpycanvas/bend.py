@@ -23,15 +23,15 @@ class Bend:
         inside_points_list = []
         for i in range(segments + 1):
             angle = self.start_radian + (self.end_radian - self.start_radian) * (i / segments)
-            x = (self.radius - self.width/2) * math.cos(angle)
-            y = (self.radius - self.width / 2) * math.sin(angle)
+            x = self.center_point.x + (self.radius - self.width/2) * math.cos(angle)
+            y = self.center_point.y + (self.radius - self.width / 2) * math.sin(angle)
             inside_points_list.append(Point(x, y))
         # outside
         outside_points_list = []
         for i in range(segments + 1):
             angle = self.end_radian - (self.end_radian - self.start_radian) * (i / segments)
-            x = (self.radius + self.width / 2) * math.cos(angle)
-            y = (self.radius + self.width / 2) * math.sin(angle)
+            x = self.center_point.x + (self.radius + self.width / 2) * math.cos(angle)
+            y = self.center_point.y + (self.radius + self.width / 2) * math.sin(angle)
             outside_points_list.append(Point(x, y))
 
         points_list = inside_points_list + outside_points_list

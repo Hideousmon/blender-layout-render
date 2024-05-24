@@ -45,39 +45,26 @@ class Polygon:
         bm = bmesh.new()
 
         segments = len(self.point_list)
-        z_center = (self.z_start + self.z_end)/2
+        z_start = self.z_start
         z_height = abs(self.z_end - self.z_start)
 
         bm_verts = []
         for i in range(segments):
-            bm_verts.append(bm.verts.new((self.point_list[i].x, self.point_list[i].y, z_center)))
+            bm_verts.append(bm.verts.new((self.point_list[i].x, self.point_list[i].y, z_start)))
 
         bm.verts.ensure_lookup_table()
         bm.faces.new(bm_verts)
         bm.faces.ensure_lookup_table()
 
-        # for i in range(segments):
-        #     bm.edges.new((bm.verts[i], bm.verts[(i + 1)%segments]))
         bm.to_mesh(mesh)
         bm.free()
-        # bpy.ops.object.select_all(action='DESELECT')
-        # obj.select_set(True)
         bpy.context.view_layer.objects.active = polygon_obj
-        # bpy.ops.object.convert(target='MESH')
-        # bpy.ops.object.mode_set(mode='EDIT')
-        # bpy.ops.mesh.extrude_region_move(TRANSFORM_OT_translate={"value": (0, 0, z_height)})
-        # bpy.ops.object.mode_set(mode='OBJECT')
-        # bpy.ops.object.modifier_add(type='SOLIDIFY')
-        # bpy.context.object.modifiers["Solidify"].thickness = z_height
-        # bpy.ops.object.modifier_apply(modifier="Solidify")
 
         bpy.ops.object.mode_set(mode='OBJECT')
 
-        # 添加 SOLIDIFY 修改器以增加厚度
         solidify_modifier = polygon_obj.modifiers.new(name='Solidify', type='SOLIDIFY')
-        solidify_modifier.thickness = z_height  # 设置厚度
+        solidify_modifier.thickness = z_height
 
-        # 应用 SOLIDIFY 修改器
         bpy.ops.object.modifier_apply(modifier=solidify_modifier.name)
 
         if not (self.material == None):
