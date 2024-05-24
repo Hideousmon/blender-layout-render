@@ -29,7 +29,7 @@ def add_camera(target, distance=10, angle=0.0, light_distance = 10, light_energy
 
     return cam
 
-def add_workbench_camera(target, view_port = TOPFRONT, distance = 10):
+def add_workbench_camera(target, view_port = TOPFRONT, distance = 10, x_shift = 0, y_shift = 0):
     if view_port == TOP:
         fix_radian = math.pi / 2
         angle = 0
@@ -57,8 +57,8 @@ def add_workbench_camera(target, view_port = TOPFRONT, distance = 10):
     # camera cal
     location_z = distance * math.sin(fix_radian)
     distance_xy = distance * math.cos(fix_radian)
-    location_x = distance_xy * math.sin((-angle - 180) / 180 * math.pi)
-    location_y = distance_xy * math.cos((-angle - 180) / 180 * math.pi)
+    location_x = distance_xy * math.sin((-angle - 180) / 180 * math.pi) + x_shift
+    location_y = distance_xy * math.cos((-angle - 180) / 180 * math.pi) + y_shift
 
     # add camera
     cam_dat = bpy.data.cameras.new('camera')

@@ -48,3 +48,13 @@ BrownArrow = {
     "Alpha": 0.9,
     "Diffusion Color": [0/255, 0/255, 218/255, 0.9],
 }
+
+TransparentGold  = {
+    "Name": "TransparentGold",
+    "Base Color": [255/255, 215/255, 0/255, 1],
+    "Roughness": 0.4,
+    "Metallic": 1.0,
+    "IOR": 1.5,
+    "Alpha": 0.4,
+    "Diffusion Color": [255/255, 215/255, 0/255, 0.4],
+}

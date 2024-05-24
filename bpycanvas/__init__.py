@@ -1,4 +1,3 @@
-from .material import Si, SiO2, Source, Monitor, BrownArrow
 from .waveguide import Waveguide
 from .camera import add_camera, add_workbench_camera
 from .arrow import Arrow
@@ -14,4 +13,5 @@ from .doubleconnector import DoubleBendConnector
 from .taper import Taper
 from .grating import Grating
 
+from .material import *
 from .utils import *

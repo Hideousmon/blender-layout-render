@@ -49,3 +49,9 @@ class Waveguide:
             bpy_object.name = self.rename
 
         return bpy_object
+
+    def get_start_point(self):
+        return self.start_point
+
+    def get_end_point(self):
+        return self.end_point

@@ -4,7 +4,7 @@ from .boolean import cut
 
 class Grating:
     def __init__(self, start_point, z_start, z_end, relative_position = RIGHT, wg_width = 0.5, etch_depth = 0.07,
-                 material = None, rename = None):
+                 material = None, rename = None, scale = 1):
         self.start_point = tuple_to_point(start_point)
         self.z_start = z_start
         self.z_end = z_end
@@ -23,54 +23,54 @@ class Grating:
 
         # create poly_list
         self.poly_list.append(start_point + (0, wg_width / 2))
-        self.poly_list.append(start_point + (0, wg_width / 2) + (10, 10))
-        self.poly_list.append(start_point + (0, wg_width / 2) + (10, 10) + (20, 0))
-        self.poly_list.append(start_point + (0, -wg_width / 2) + (10, -10) + (20, 0))
-        self.poly_list.append(start_point + (0, -wg_width / 2) + (10, -10))
+        self.poly_list.append(start_point + (0, wg_width / 2) + (10*scale, 10*scale))
+        self.poly_list.append(start_point + (0, wg_width / 2) + (10*scale, 10*scale) + (20*scale, 0))
+        self.poly_list.append(start_point + (0, -wg_width / 2) + (10*scale, -10*scale) + (20*scale, 0))
+        self.poly_list.append(start_point + (0, -wg_width / 2) + (10*scale, -10*scale))
         self.poly_list.append(start_point + (0, -wg_width / 2))
 
         # create etch 1
-        self.etch_1_list.append(start_point + (13, 0) + (-0.5, 10 + wg_width/2))
-        self.etch_1_list.append(start_point + (13, 0) + (0.5, 10 + wg_width / 2))
-        self.etch_1_list.append(start_point + (13, 0) + (0.5, -10 - wg_width / 2))
-        self.etch_1_list.append(start_point + (13, 0) + (-0.5, -10 - wg_width/2))
+        self.etch_1_list.append(start_point + (13*scale, 0) + (-0.5*scale, 10*scale + wg_width/2))
+        self.etch_1_list.append(start_point + (13*scale, 0) + (0.5*scale, 10*scale + wg_width / 2))
+        self.etch_1_list.append(start_point + (13*scale, 0) + (0.5*scale, -10*scale - wg_width / 2))
+        self.etch_1_list.append(start_point + (13*scale, 0) + (-0.5*scale, -10*scale - wg_width/2))
 
         # create etch 2
-        self.etch_2_list.append(start_point + (16, 0) + (-0.5, 10 + wg_width/2))
-        self.etch_2_list.append(start_point + (16, 0) + (0.5, 10 + wg_width / 2))
-        self.etch_2_list.append(start_point + (16, 0) + (0.5, -10 - wg_width / 2))
-        self.etch_2_list.append(start_point + (16, 0) + (-0.5, -10 - wg_width/2))
+        self.etch_2_list.append(start_point + (16*scale, 0) + (-0.5*scale, 10*scale + wg_width/2))
+        self.etch_2_list.append(start_point + (16*scale, 0) + (0.5*scale, 10*scale + wg_width / 2))
+        self.etch_2_list.append(start_point + (16*scale, 0) + (0.5*scale, -10*scale - wg_width / 2))
+        self.etch_2_list.append(start_point + (16*scale, 0) + (-0.5*scale, -10*scale - wg_width/2))
 
 
         # create etch 3
-        self.etch_3_list.append(start_point + (19, 0) + (-0.5, 10 + wg_width/2))
-        self.etch_3_list.append(start_point + (19, 0) + (0.5, 10 + wg_width / 2))
-        self.etch_3_list.append(start_point + (19, 0) + (0.5, -10 - wg_width / 2))
-        self.etch_3_list.append(start_point + (19, 0) + (-0.5, -10 - wg_width/2))
+        self.etch_3_list.append(start_point + (19*scale, 0) + (-0.5*scale, 10*scale + wg_width/2))
+        self.etch_3_list.append(start_point + (19*scale, 0) + (0.5*scale, 10*scale + wg_width / 2))
+        self.etch_3_list.append(start_point + (19*scale, 0) + (0.5*scale, -10*scale - wg_width / 2))
+        self.etch_3_list.append(start_point + (19*scale, 0) + (-0.5*scale, -10*scale - wg_width/2))
 
 
 
         # create etch 4
-        self.etch_4_list.append(start_point + (22, 0) + (-0.5, 10 + wg_width/2))
-        self.etch_4_list.append(start_point + (22, 0) + (0.5, 10 + wg_width / 2))
-        self.etch_4_list.append(start_point + (22, 0) + (0.5, -10 - wg_width / 2))
-        self.etch_4_list.append(start_point + (22, 0) + (-0.5, -10 - wg_width/2))
+        self.etch_4_list.append(start_point + (22*scale, 0) + (-0.5*scale, 10*scale + wg_width/2))
+        self.etch_4_list.append(start_point + (22*scale, 0) + (0.5*scale, 10*scale + wg_width / 2))
+        self.etch_4_list.append(start_point + (22*scale, 0) + (0.5*scale, -10*scale - wg_width / 2))
+        self.etch_4_list.append(start_point + (22*scale, 0) + (-0.5*scale, -10*scale - wg_width/2))
 
 
 
         # create etch 5
-        self.etch_5_list.append(start_point + (25, 0) + (-0.5, 10 + wg_width/2))
-        self.etch_5_list.append(start_point + (25, 0) + (0.5, 10 + wg_width / 2))
-        self.etch_5_list.append(start_point + (25, 0) + (0.5, -10 - wg_width / 2))
-        self.etch_5_list.append(start_point + (25, 0) + (-0.5, -10 - wg_width/2))
+        self.etch_5_list.append(start_point + (25*scale, 0) + (-0.5*scale, 10*scale + wg_width/2))
+        self.etch_5_list.append(start_point + (25*scale, 0) + (0.5*scale, 10*scale + wg_width / 2))
+        self.etch_5_list.append(start_point + (25*scale, 0) + (0.5*scale, -10*scale - wg_width / 2))
+        self.etch_5_list.append(start_point + (25*scale, 0) + (-0.5*scale, -10*scale - wg_width/2))
 
 
 
         # create etch 6
-        self.etch_6_list.append(start_point + (28, 0) + (-0.5, 10 + wg_width/2))
-        self.etch_6_list.append(start_point + (28, 0) + (0.5, 10 + wg_width / 2))
-        self.etch_6_list.append(start_point + (28, 0) + (0.5, -10 - wg_width / 2))
-        self.etch_6_list.append(start_point + (28, 0) + (-0.5, -10 - wg_width/2))
+        self.etch_6_list.append(start_point + (28*scale, 0) + (-0.5*scale, 10*scale + wg_width/2))
+        self.etch_6_list.append(start_point + (28*scale, 0) + (0.5*scale, 10*scale + wg_width / 2))
+        self.etch_6_list.append(start_point + (28*scale, 0) + (0.5*scale, -10*scale - wg_width / 2))
+        self.etch_6_list.append(start_point + (28*scale, 0) + (-0.5*scale, -10*scale - wg_width/2))
 
         # rotation
         if self.relative_position == LEFT:
@@ -145,3 +145,6 @@ class Grating:
         etch_obj = bpy.context.object
         cut(base_obj, etch_obj)
         return base_obj
+
+    def get_start_point(self):
+        return self.start_point
