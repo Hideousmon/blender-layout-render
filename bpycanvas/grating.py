@@ -75,10 +75,47 @@ class Grating:
         # rotation
         if self.relative_position == LEFT:
             theta = math.pi
-            for i in range(len(self.poly_list)):
-                x = (self.poly_list[i].x - self.start_point.x) * math.cos(theta) - (self.poly_list[i].y - self.start_point.y) * math.sin(theta) + self.start_point.x
-                y = (self.poly_list[i].x - self.start_point.x) * math.sin(theta) + (self.poly_list[i].y - self.start_point.y) * math.cos(theta) + self.start_point.y
-                self.poly_list[i] = Point(x, y)
+        elif self.relative_position == UP:
+            theta = math.pi / 2
+        elif self.relative_position == DOWN:
+            theta = math.pi * 3 / 2
+        else: #RIGHT
+            theta = 0
+
+        for i in range(len(self.poly_list)):
+            x = (self.poly_list[i].x - self.start_point.x) * math.cos(theta) - (self.poly_list[i].y - self.start_point.y) * math.sin(theta) + self.start_point.x
+            y = (self.poly_list[i].x - self.start_point.x) * math.sin(theta) + (self.poly_list[i].y - self.start_point.y) * math.cos(theta) + self.start_point.y
+            self.poly_list[i] = Point(x, y)
+
+        for i in range(len(self.etch_1_list)):
+            x = (self.etch_1_list[i].x - self.start_point.x) * math.cos(theta) - (self.etch_1_list[i].y - self.start_point.y) * math.sin(theta) + self.start_point.x
+            y = (self.etch_1_list[i].x - self.start_point.x) * math.sin(theta) + (self.etch_1_list[i].y - self.start_point.y) * math.cos(theta) + self.start_point.y
+            self.etch_1_list[i] = Point(x, y)
+
+        for i in range(len(self.etch_2_list)):
+            x = (self.etch_2_list[i].x - self.start_point.x) * math.cos(theta) - (self.etch_2_list[i].y - self.start_point.y) * math.sin(theta) + self.start_point.x
+            y = (self.etch_2_list[i].x - self.start_point.x) * math.sin(theta) + (self.etch_2_list[i].y - self.start_point.y) * math.cos(theta) + self.start_point.y
+            self.etch_2_list[i] = Point(x, y)
+
+        for i in range(len(self.etch_3_list)):
+            x = (self.etch_3_list[i].x - self.start_point.x) * math.cos(theta) - (self.etch_3_list[i].y - self.start_point.y) * math.sin(theta) + self.start_point.x
+            y = (self.etch_3_list[i].x - self.start_point.x) * math.sin(theta) + (self.etch_3_list[i].y - self.start_point.y) * math.cos(theta) + self.start_point.y
+            self.etch_3_list[i] = Point(x, y)
+
+        for i in range(len(self.etch_4_list)):
+            x = (self.etch_4_list[i].x - self.start_point.x) * math.cos(theta) - (self.etch_4_list[i].y - self.start_point.y) * math.sin(theta) + self.start_point.x
+            y = (self.etch_4_list[i].x - self.start_point.x) * math.sin(theta) + (self.etch_4_list[i].y - self.start_point.y) * math.cos(theta) + self.start_point.y
+            self.etch_4_list[i] = Point(x, y)
+
+        for i in range(len(self.etch_5_list)):
+            x = (self.etch_5_list[i].x - self.start_point.x) * math.cos(theta) - (self.etch_5_list[i].y - self.start_point.y) * math.sin(theta) + self.start_point.x
+            y = (self.etch_5_list[i].x - self.start_point.x) * math.sin(theta) + (self.etch_5_list[i].y - self.start_point.y) * math.cos(theta) + self.start_point.y
+            self.etch_5_list[i] = Point(x, y)
+
+        for i in range(len(self.etch_6_list)):
+            x = (self.etch_6_list[i].x - self.start_point.x) * math.cos(theta) - (self.etch_6_list[i].y - self.start_point.y) * math.sin(theta) + self.start_point.x
+            y = (self.etch_6_list[i].x - self.start_point.x) * math.sin(theta) + (self.etch_6_list[i].y - self.start_point.y) * math.cos(theta) + self.start_point.y
+            self.etch_6_list[i] = Point(x, y)
 
         self.base_poly = Polygon(self.poly_list, self.z_start, self.z_end, material=self.material)
         self.etch_poly1 = Polygon(self.etch_1_list, self.z_end - self.etch_depth, self.z_end)
