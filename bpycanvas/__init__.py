@@ -11,5 +11,6 @@ from .bend import Bend
 from .quarbend import QuarBend, AQuarBend
 from .sbend import SBend, ASBend
 from .doubleconnector import DoubleBendConnector
+from .taper import Taper
 
 from .utils import *
