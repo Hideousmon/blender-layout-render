@@ -9,5 +9,6 @@ from .boolean import cut
 from .polygon import Polygon
 from .bend import Bend
 from .quarbend import QuarBend, AQuarBend
+from .sbend import SBend, ASBend
 
 from .utils import *
