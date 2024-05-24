@@ -6,5 +6,6 @@ from .plane import Plane
 from .filledpattern import Circle, Rectangle
 from .pixelsregion import CirclePixelsRegion, RectanglePixelsRegion
 from .boolean import cut
+from .polygon import Polygon
 
 from .utils import *
