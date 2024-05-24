@@ -55,7 +55,7 @@ def cycles_render(filename, scene_cam, resolution_x = 480, resolution_y = 320, u
     scene.camera = scene_cam
     scene.render.image_settings.file_format = "PNG"
     scene.render.image_settings.color_mode = 'RGBA'
-    scene.render.filepath = filename
+    scene.render.filepath = os.path.abspath(filename)
     scene.render.resolution_x = resolution_x
     scene.render.resolution_y = resolution_y
 
@@ -70,7 +70,7 @@ def workbench_render(filename, scene_cam, resolution_x = 480, resolution_y = 320
     scene = bpy.context.scene
     scene.render.image_settings.file_format = "PNG"
     scene.render.image_settings.color_mode = color_mode
-    scene.render.filepath = filename
+    scene.render.filepath = os.path.abspath(filename)
     scene.render.resolution_x = resolution_x
     scene.render.resolution_y = resolution_y
 

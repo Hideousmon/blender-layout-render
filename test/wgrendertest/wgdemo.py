@@ -27,6 +27,6 @@ if __name__ == "__main__":
     # cycles_render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
 
     cam = add_workbench_camera(wg_bpy, view_port=TOPFRONT)
-    workbench_render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
+    workbench_render('./images/test.png', cam)
 
     save_blender("./test.blend")
