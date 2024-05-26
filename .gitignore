@@ -167,3 +167,4 @@ learning_recordings.md
 assets
 *.pptx
 temp_test.py
+!__img/*.png

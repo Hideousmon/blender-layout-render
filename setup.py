@@ -15,5 +15,6 @@ setup(name='bpycanvas',
       install_requires=[],
       # long_description=long_description,
       url="https://github.com/Hideousmon/blender-layout-render",
+      include_package_data=True,
       packages=find_packages()
       )
