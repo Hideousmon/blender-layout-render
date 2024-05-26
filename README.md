@@ -7,9 +7,9 @@ A Blender modeling tool with a similar modeling method to [SPLayout](https://git
 ### Installation
 
 ```powershell
-git clone https://github.com/Hideousmon/blender-layout-render
+git clone https://github.com/Hideousmon/blender-layout-render.git
 cd blender-layout-render
-path-to-blender-python.exe setup.py install
+path-to-blender-python setup.py install
 ```
 
 for example:
