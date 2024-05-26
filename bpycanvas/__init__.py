@@ -1,3 +1,5 @@
+__version__ = "0.0.1"
+
 from .waveguide import Waveguide
 from .camera import add_camera, add_workbench_camera
 from .arrow import Arrow
