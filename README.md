@@ -1,5 +1,5 @@
 # blender-layout-render
-A Blender modeling tool with a similar modeling method to SPLayout.
+A Blender modeling tool with a similar modeling method to [SPLayout](https://github.com/Hideousmon/SPLayout).
 
 ###  Dependency
 * Blender 4.1
@@ -32,17 +32,17 @@ Otherwise, you can set this python as a system python in PyCharm and run it.
 
 ### Examples
 
-examples can be find in the [examples](https://github.com/Hideousmon/blender-layout-render/examples) directory. 
+examples can be find in the [examples](https://github.com/Hideousmon/blender-layout-render/tree/main/examples) directory. 
 
 #### Simulation Scene of a Waveguide
 
-[waveguide_sim_scene.py](https://github.com/Hideousmon/blender-layout-render/examples/waveguide_sim_scene.py)
+[waveguide_sim_scene.py](https://github.com/Hideousmon/blender-layout-render/blob/main/examples/waveguide_sim_scene.py)
 
 ![process](__img/waveguide_sim_scene.png)
 
 #### Layout of an Integrated Photonics Device
 
-[integration_layout.py](https://github.com/Hideousmon/blender-layout-render/examples/integration_layout.py)
+[integration_layout.py](https://github.com/Hideousmon/blender-layout-render/blob/main/examples/integration_layout.py)
 
 ![process](__img/integration_layout.png)
 
