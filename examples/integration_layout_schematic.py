@@ -104,6 +104,6 @@ if __name__ == "__main__":
     phase_shifter_4.draw()
 
     cam = add_workbench_camera(inter_wg_2_obj, view_port=TOPFRONT, distance=85, x_shift=inter_wg_2.get_start_point().x + 7.5)
-    workbench_render('./integration_layout.png', cam, resolution_x=1920, resolution_y=1080)
+    workbench_render('./integration_layout_schematic.png', cam, resolution_x=1920, resolution_y=1080)
 
-    save_blender("./integration_layout.blend")
+    save_blender("./integration_layout_schematic.blend")

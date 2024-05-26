@@ -40,11 +40,11 @@ examples can be find in the [examples](https://github.com/Hideousmon/blender-lay
 
 ![process](__img/waveguide_sim_scene.png)
 
-#### Layout of an Integrated Photonics Device
+#### Layout Schematic of an Integrated PhotSonics Device
 
-[integration_layout.py](https://github.com/Hideousmon/blender-layout-render/blob/main/examples/integration_layout.py)
+[integration_layout_schematic.py](https://github.com/Hideousmon/blender-layout-render/blob/main/examples/integration_layout_schematic.py)
 
-![process](__img/integration_layout.png)
+![process](__img/integration_layout_schematic.png)
 
 ### TODO
 
