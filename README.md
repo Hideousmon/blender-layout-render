@@ -49,7 +49,7 @@ examples can be find in the [examples](https://github.com/Hideousmon/blender-lay
 ### TODO
 
 1. better color matching.
-2. more materials
+2. more materials.
 3. ...
 
 Pull requests / issues are welcomed.
