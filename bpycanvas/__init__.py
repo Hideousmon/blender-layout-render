@@ -14,6 +14,7 @@ from .sbend import SBend, ASBend
 from .doubleconnector import DoubleBendConnector
 from .taper import Taper
 from .grating import Grating
+from .stickerplane import StickerPlane
 
 from .material import *
 from .utils import *

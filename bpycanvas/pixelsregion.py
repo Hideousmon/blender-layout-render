@@ -64,7 +64,7 @@ class CirclePixelsRegion:
         bpy.context.view_layer.objects.active = obj_for_return
         bpy.ops.object.join()
 
-        if not (self.material == None):
+        if not self.material is None:
             material = bpy.data.materials.new(name=self.material["Name"])
             material.use_nodes = True
             mat_nodes = material.node_tree.nodes
@@ -147,7 +147,7 @@ class RectanglePixelsRegion:
         bpy.context.view_layer.objects.active = obj_for_return
         bpy.ops.object.join()
 
-        if not (self.material == None):
+        if not self.material is None:
             material = bpy.data.materials.new(name=self.material["Name"])
             material.use_nodes = True
             mat_nodes = material.node_tree.nodes

@@ -67,7 +67,7 @@ class Polygon:
 
         bpy.ops.object.modifier_apply(modifier=solidify_modifier.name)
 
-        if not (self.material == None):
+        if not self.material is None:
             material = bpy.data.materials.new(name=self.material["Name"])
             material.use_nodes = True
             mat_nodes = material.node_tree.nodes
@@ -80,7 +80,7 @@ class Polygon:
             mat_nodes["Principled BSDF"].inputs["IOR"].default_value = self.material["IOR"]
             mat_nodes["Principled BSDF"].inputs["Alpha"].default_value = self.material["Alpha"]
             material.diffuse_color = self.material["Diffusion Color"]
-        if not (self.rename == None):
+        if not self.rename is None:
             polygon_obj.name = self.rename
 
         return polygon_obj

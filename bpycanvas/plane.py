@@ -28,7 +28,7 @@ class Plane:
             bpy_object.scale = (self.width, self.height, 1)
             bpy_object.rotation_euler = (math.pi / 2, 0, 0)
 
-        if not (self.material == None):
+        if not self.material is None:
             material = bpy.data.materials.new(name=self.material["Name"])
             material.use_nodes = True
             mat_nodes = material.node_tree.nodes
@@ -41,7 +41,7 @@ class Plane:
             mat_nodes["Principled BSDF"].inputs["IOR"].default_value = self.material["IOR"]
             mat_nodes["Principled BSDF"].inputs["Alpha"].default_value = self.material["Alpha"]
             material.diffuse_color = self.material["Diffusion Color"]
-        if not (self.rename == None):
+        if not self.rename is None:
             bpy_object.name = self.rename
 
         return bpy_object
