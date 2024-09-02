@@ -39,7 +39,7 @@ Monitor = {
     "Diffusion Color": [250/255, 157/255, 90/255, 0.5],
 }
 
-BrownArrow = {
+RedArrow = {
     "Name": "BrownArrow",
     "Base Color": [0/255, 0/255, 218/255, 1],
     "Roughness": 0.4,

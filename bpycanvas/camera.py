@@ -2,13 +2,12 @@ import bpy
 import math
 from .utils import *
 
-def add_camera(target, distance=10, angle=0.0, light_distance = 10, light_energy = 200):
+def add_camera(target, distance=10, fix_radian=0.28169203286535016*math.pi, angle=0.0, light_distance = 10, light_energy = 200, x_shift = 0, y_shift = 0):
     # camera cal
-    fix_radian = 0.28169203286535016*math.pi
     location_z = distance*math.sin(fix_radian)
     distance_xy = distance*math.cos(fix_radian)
-    location_x = distance_xy * math.sin((-angle - 180) / 180 * math.pi)
-    location_y = distance_xy * math.cos((-angle - 180) / 180 * math.pi)
+    location_x = distance_xy * math.sin((-angle - 180) / 180 * math.pi) + x_shift
+    location_y = distance_xy * math.cos((-angle - 180) / 180 * math.pi) + y_shift
 
     # add light
 

@@ -15,6 +15,7 @@ from .doubleconnector import DoubleBendConnector
 from .taper import Taper
 from .grating import Grating
 from .stickerplane import StickerPlane
+from .ribbon import Ribbon
 
 from .material import *
 from .utils import *

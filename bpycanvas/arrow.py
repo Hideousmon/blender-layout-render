@@ -19,7 +19,7 @@ class Arrow:
         else:
             self.ifexist = 1
 
-        self.location_shaft = ((start_point.x + end_point.y)/2, (start_point.y + end_point.y)/2, (z_start + z_end) / 2)
+        self.location_shaft = ((start_point.x + end_point.x)/2, (start_point.y + end_point.y)/2, (z_start + z_end) / 2)
         self.radius_shaft = width/2
         self.radius_head = self.radius_shaft * 3
         self.depth_head = self.radius_head/3 * 10
@@ -29,16 +29,13 @@ class Arrow:
         direction = mathutils.Vector(vector)
         length = direction.length
         self.depth_shaft = length
-        self.location_head = np.array([(start_point.x + end_point.y)/2, (start_point.y + end_point.y)/2,
+        self.location_head = np.array([(start_point.x + end_point.x)/2, (start_point.y + end_point.y)/2,
                                        (z_start + z_end) / 2]) + vector*(
                 self.depth_shaft/2 + self.depth_head/2) / length
 
         direction.normalize()
         up_vector = mathutils.Vector((0, 0, -1))
         self.rotation = direction.rotation_difference(up_vector).to_euler()
-        print(vector)
-        print(direction)
-        print(self.rotation)
 
 
     def draw(self):
