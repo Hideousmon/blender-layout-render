@@ -168,3 +168,4 @@ assets
 *.pptx
 temp_test.py
 !__img/*.png
+test/stackedpolygontest/polygons

@@ -1,6 +1,6 @@
 import bpy
 import math
-from bpycanvas import save_blender, start_blender, render
+from bpycanvas import save_blender, start_blender, cycles_render
 
 if __name__ == "__main__":
     start_blender()
@@ -85,6 +85,6 @@ if __name__ == "__main__":
 
     bpy.context.window_manager.windows.update()
 
-    render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
+    cycles_render('D:/GithubProjects/blender-pyscripts-learning/test/wgrendertest/images/test.png', cam)
 
     save_blender("./test.blend")

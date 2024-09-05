@@ -10,7 +10,7 @@ if __name__ == "__main__":
     wg = Waveguide(Point(-2, 0), Point(2, 0), width=1, z_start=-0.11, z_end=0.11, material=Si)
     wg_obj = wg.draw()
 
-    arrow = Arrow(Point(-1.8, 0), Point(-1.2, 0), width=0.05, z_start=0.25, z_end=0.25, material=RedArrow)
+    arrow = Arrow(Point(-1.8, 0), Point(-1.2, 0), width=0.05, z_start=0.25, z_end=0.25, material=BlueArrow)
     arrow.draw()
 
     source = Plane(Point(-1.5, 0), width=1.5, height=0.8, z_center=0, material=Source)

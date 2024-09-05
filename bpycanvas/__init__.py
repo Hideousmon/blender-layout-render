@@ -7,7 +7,7 @@ from .plane import Plane
 from .filledpattern import Circle, Rectangle
 from .pixelsregion import CirclePixelsRegion, RectanglePixelsRegion
 from .boolean import cut
-from .polygon import Polygon
+from .polygon import Polygon, StackedPolygon
 from .bend import Bend
 from .quarbend import QuarBend, AQuarBend
 from .sbend import SBend, ASBend
