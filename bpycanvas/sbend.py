@@ -46,9 +46,6 @@ class SBend:
             self.radian = math.pi - 2 * self.theta
             self.radius = math.sin(self.theta) * math.sqrt(
                 math.pow(self.delta_x / 2, 2) + math.pow(self.delta_y / 2, 2)) / math.sin(self.radian)
-            if (self.radius < 5):
-                print("Warning! The radius of the bends in SBend is too small! The radius now is:" + str(
-                    self.radius) + "μm.")
             self.length = self.radian * self.radius
 
         ## identify the type of S-Bend
