@@ -27,6 +27,9 @@ def start_blender():
         if not texture.users:
             bpy.data.textures.remove(texture)
 
+def start_blender_with_loading(loading_absolute_path):
+    bpy.ops.wm.open_mainfile(filepath=loading_absolute_path)
+
 def save_blender(filepath):
     if os.path.exists(filepath):
         os.remove(filepath)

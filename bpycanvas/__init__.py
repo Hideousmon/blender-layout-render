@@ -18,6 +18,7 @@ from .stickerplane import StickerPlane
 from .ribbon import Ribbon
 from .couplermzi import PhaseShifter, CouplerMZI, CouplerMZIPlusPhaseShifter, CouplerMZIMesh
 from .serpentineline import SerpentineLine
+from .linesflow import LinesFlow
 
 from .material import *
 from .utils import *
