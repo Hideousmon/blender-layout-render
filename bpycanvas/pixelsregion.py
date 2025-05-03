@@ -1,4 +1,5 @@
 from .utils import *
+from .boolean import cut
 from .filledpattern import Circle, Rectangle
 import numpy as np
 import os
@@ -79,6 +80,63 @@ class CirclePixelsRegion:
             material.diffuse_color = self.material["Diffusion Color"]
 
         return obj_for_return
+
+    def fast_draw_and_cut(self, obj_for_cut, matrix):
+        if (type(self.matrix_mask) != type(None)):
+            enable_positions = np.where(np.transpose(self.matrix_mask) == 1)
+            if (len(np.transpose(enable_positions)) != len(matrix)):
+                raise Exception("The input matrix can not match the matrix_mask!")
+            masked_matrix = self.matrix_mask.copy().astype(np.double)
+            for i,position in enumerate(np.transpose(enable_positions)):
+                masked_matrix[position[1], position[0]] = matrix[i]
+        elif (len(matrix.shape) != 2):
+            raise Exception("The input matrix should be two-dimensional when matrix_mask not specified!")
+        else:
+            masked_matrix = matrix
+
+        self.block_x_length = np.abs(self.left_down_point.x - self.right_up_point.x) / masked_matrix.shape[0]
+        self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / masked_matrix.shape[1]
+        self.x_start_point = self.left_down_point.x + self.block_x_length / 2
+        self.y_start_point = self.right_up_point.y - self.block_y_length / 2
+
+        obj_list = []
+        bpy.context.preferences.edit.use_global_undo = False
+        view_layer = bpy.context.view_layer
+        view_layer.update()
+
+        for row in range(0, masked_matrix.shape[1]):
+            for col in range(0, masked_matrix.shape[0]):
+                center_point = Point(self.x_start_point+col*self.block_x_length,self.y_start_point-row*self.block_y_length)
+                radius = self.pixel_radius * masked_matrix[col,row]
+                if (radius <= 0.001):
+                    radius = 0
+                if (np.isclose(radius, self.pixel_radius) or radius > self.pixel_radius):
+                    radius = self.pixel_radius
+                if (~np.isclose(radius, 0)):
+
+                    bpy.ops.mesh.primitive_cylinder_add(
+                        radius=radius,
+                        depth=abs(self.z_end - self.z_start),
+                        location=(center_point.x, center_point.y, (self.z_start + self.z_end) / 2),
+                        vertices=16
+                    )
+
+                    cyl = bpy.context.object
+
+                    obj_list.append(cyl)
+
+                if col == 0 and len(obj_list)!=0:
+                    bpy.ops.object.select_all(action='DESELECT')
+                    for obj in obj_list:
+                        obj.select_set(True)
+                    obj_for_return = obj_list[0]
+                    bpy.context.view_layer.objects.active = obj_for_return
+                    bpy.ops.object.join()
+                    obj_for_cut = cut(obj_for_cut, obj_for_return)
+                    print(f"finished row:", row)
+                    obj_list =[]
+
+        return obj_for_cut
 
 class RectanglePixelsRegion:
     def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_x_length, pixel_y_length, z_start, z_end,
