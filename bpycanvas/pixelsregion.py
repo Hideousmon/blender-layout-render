@@ -135,6 +135,16 @@ class CirclePixelsRegion:
                     obj_for_cut = cut(obj_for_cut, obj_for_return)
                     print(f"finished row:", row)
                     obj_list =[]
+            if row == masked_matrix.shape[1] - 1 and row != 0:
+                bpy.ops.object.select_all(action='DESELECT')
+                for obj in obj_list:
+                    obj.select_set(True)
+                obj_for_return = obj_list[0]
+                bpy.context.view_layer.objects.active = obj_for_return
+                bpy.ops.object.join()
+                obj_for_cut = cut(obj_for_cut, obj_for_return)
+                print(f"finished row:", row)
+                obj_list = []
 
         return obj_for_cut
 
