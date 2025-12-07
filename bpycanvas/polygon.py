@@ -131,13 +131,15 @@ class Polygon:
 class StackedPolygon:
     def __init__(self, functional_polygons, polygon_types, z_start, z_end, material=None, rename=None,
                  start_point=None, end_point=None, input_point=None, through_point=None,
-                 drop_point=None, add_point=None):
+                 drop_point=None, add_point=None, x_shift =0, y_shift = 0):
         self.functional_polygons = functional_polygons
         self.polygon_types = polygon_types
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
         self.rename = rename
+        self.x_shift = x_shift
+        self.y_shift = y_shift
         self.start_point = tuple_to_point(start_point)
         self.end_point = tuple_to_point(end_point)
         self.input_point = tuple_to_point(input_point)
@@ -152,6 +154,8 @@ class StackedPolygon:
             common_type_poly_obj_list = []
             for j, poly in enumerate(self.functional_polygons):
                 if self.polygon_types[j] == i:
+                    poly[:, 0] = poly[:, 0] + self.x_shift
+                    poly[:, 1] = poly[:, 1] + self.y_shift
                     if i%2 == 0:
                         poly_temp = Polygon(poly, z_start=self.z_start, z_end=self.z_end, material=None)
                     else:
@@ -198,36 +202,36 @@ class StackedPolygon:
         if (type(self.start_point) == type(None)):
             raise Exception("\"start_point\" is not specified in this Polygon!")
         else:
-            return self.start_point
+            return self.start_point + (self.x_shift, self.y_shift)
 
     def get_end_point(self):
         if (type(self.end_point) == type(None)):
             raise Exception("\"end_point\" is not specified in this Polygon!")
         else:
-            return self.end_point
+            return self.end_point + (self.x_shift, self.y_shift)
 
     def get_input_point(self):
         if (type(self.input_point) == type(None)):
             raise Exception("\"input_point\" is not specified in this Polygon!")
         else:
-            return self.input_point
+            return self.input_point + (self.x_shift, self.y_shift)
 
     def get_through_point(self):
         if (type(self.through_point) == type(None)):
             raise Exception("\"through_point\" is not specified in this Polygon!")
         else:
-            return self.through_point
+            return self.through_point + (self.x_shift, self.y_shift)
 
     def get_drop_point(self):
         if (type(self.drop_point) == type(None)):
             raise Exception("\"drop_point\" is not specified in this Polygon!")
         else:
-            return self.drop_point
+            return self.drop_point + (self.x_shift, self.y_shift)
 
     def get_add_point(self):
         if (type(self.add_point) == type(None)):
             raise Exception("\"add_point\" is not specified in this Polygon!")
         else:
-            return self.add_point
+            return self.add_point + (self.x_shift, self.y_shift)
 
 
