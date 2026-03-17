@@ -149,36 +149,38 @@ class StackedPolygon:
 
     def draw(self):
         poly_obj_list = []
-        max_type_num = np.max(self.polygon_types)
-        for i in range(0, max_type_num + 1):
+        max_type_num = np.max(self.polygon_types) if self.polygon_types.size > 0 else -1
+
+        for i in range(max_type_num + 1):
             common_type_poly_obj_list = []
+
             for j, poly in enumerate(self.functional_polygons):
                 if self.polygon_types[j] == i:
-                    poly[:, 0] = poly[:, 0] + self.x_shift
-                    poly[:, 1] = poly[:, 1] + self.y_shift
-                    if i%2 == 0:
-                        poly_temp = Polygon(poly, z_start=self.z_start, z_end=self.z_end, material=None)
-                    else:
-                        poly_temp = Polygon(poly[::-1], z_start=self.z_start, z_end=self.z_end, material=None)
-                    poly_obj_temp = poly_temp.draw()
-                    common_type_poly_obj_list.append(poly_obj_temp)
+                    poly_copy = poly.copy()
+                    poly_copy[:, 0] += self.x_shift
+                    poly_copy[:, 1] += self.y_shift
 
-            bpy.ops.object.select_all(action='DESELECT')
-            for obj in common_type_poly_obj_list:
-                obj.select_set(True)
+                    vertices = poly_copy if i % 2 == 0 else poly_copy[::-1]
+                    poly_temp = Polygon(vertices, z_start=self.z_start, z_end=self.z_end, material=None)
+                    common_type_poly_obj_list.append(poly_temp.draw())
 
-            obj_for_return = common_type_poly_obj_list[0]
-            bpy.context.view_layer.objects.active = obj_for_return
-            bpy.ops.object.join()
-            poly_obj_list.append(obj_for_return)
+            if common_type_poly_obj_list:
+                bpy.ops.object.select_all(action='DESELECT')
+                for obj in common_type_poly_obj_list:
+                    obj.select_set(True)
 
-        # boolean operations
-        if max_type_num == 0:
+                bpy.context.view_layer.objects.active = common_type_poly_obj_list[0]
+                bpy.ops.object.join()
+                poly_obj_list.append(common_type_poly_obj_list[0])
+
+        if len(poly_obj_list) == 1:
             polygon_obj = poly_obj_list[0]
+        elif len(poly_obj_list) >= 2:
+            polygon_obj = poly_obj_list[-1]
+            for obj in reversed(poly_obj_list[:-1]):
+                polygon_obj = cut(polygon_obj, obj)
         else:
-            polygon_obj = cut(poly_obj_list[max_type_num-1], poly_obj_list[max_type_num])
-            for i in range(1, max_type_num):
-                polygon_obj = cut(poly_obj_list[max_type_num-1-i], polygon_obj)
+            polygon_obj = None
 
         if not self.material is None:
             material = bpy.data.materials.new(name=self.material["Name"])
