@@ -1,5 +1,6 @@
 from .utils import *
-from .boolean import cut
+from .shapelyutils import *
+from shapely.ops import unary_union
 import numpy as np
 import bpy
 import bmesh
@@ -148,39 +149,56 @@ class StackedPolygon:
         self.add_point = tuple_to_point(add_point)
 
     def draw(self):
-        poly_obj_list = []
-        max_type_num = np.max(self.polygon_types) if self.polygon_types.size > 0 else -1
+        type_geoms = []
+        max_type_num = int(self.polygon_types.max()) if self.polygon_types.size > 0 else -1
 
         for i in range(max_type_num + 1):
-            common_type_poly_obj_list = []
+            same_type_geoms = []
 
             for j, poly in enumerate(self.functional_polygons):
-                if self.polygon_types[j] == i:
-                    poly_copy = poly.copy()
-                    poly_copy[:, 0] += self.x_shift
-                    poly_copy[:, 1] += self.y_shift
+                if self.polygon_types[j] != i:
+                    continue
 
-                    vertices = poly_copy if i % 2 == 0 else poly_copy[::-1]
-                    poly_temp = Polygon(vertices, z_start=self.z_start, z_end=self.z_end, material=None)
-                    common_type_poly_obj_list.append(poly_temp.draw())
+                poly_copy = poly.copy()
+                poly_copy[:, 0] += self.x_shift
+                poly_copy[:, 1] += self.y_shift
 
-            if common_type_poly_obj_list:
-                bpy.ops.object.select_all(action='DESELECT')
-                for obj in common_type_poly_obj_list:
-                    obj.select_set(True)
+                geom = np_polygon_to_shapely(poly_copy)
+                if geom is not None:
+                    same_type_geoms.append(geom)
 
-                bpy.context.view_layer.objects.active = common_type_poly_obj_list[0]
-                bpy.ops.object.join()
-                poly_obj_list.append(common_type_poly_obj_list[0])
+            if same_type_geoms:
+                merged = unary_union(same_type_geoms)
 
-        if len(poly_obj_list) == 1:
-            polygon_obj = poly_obj_list[0]
-        elif len(poly_obj_list) >= 2:
-            polygon_obj = poly_obj_list[-1]
-            for obj in reversed(poly_obj_list[:-1]):
-                polygon_obj = cut(polygon_obj, obj)
-        else:
+                if not merged.is_valid:
+                    merged = merged.buffer(0)
+
+                type_geoms.append((i, merged))
+
+        if not type_geoms:
             polygon_obj = None
+        else:
+            result_geom = None
+
+            for i, geom in type_geoms:
+                if result_geom is None:
+                    result_geom = geom
+                else:
+                    if i % 2 == 0:
+                        result_geom = result_geom.union(geom)
+                    else:
+                        result_geom = result_geom.difference(geom)
+
+                # 每一步都尽量修一遍
+                if not result_geom.is_valid:
+                    result_geom = result_geom.buffer(0)
+
+            polygon_obj = shapely_to_curve_object(
+                result_geom,
+                name="polygon_result",
+                z_start=self.z_start,
+                z_end=self.z_end,
+            )
 
         if not self.material is None:
             material = bpy.data.materials.new(name=self.material["Name"])

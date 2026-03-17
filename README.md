@@ -1,55 +1,88 @@
 # blender-layout-render
-A Blender modeling tool with a similar modeling method to [SPLayout](https://github.com/Hideousmon/SPLayout).
 
-###  Dependency
-* Blender 4.1
+A Blender modeling tool with a workflow similar to [SPLayout](https://github.com/Hideousmon/SPLayout).
 
-### Installation
+## Dependencies
+
+- Blender 4.1
+- `bpy` (provided by Blender Python)
+- `shapely`
+
+## Installation
+
+Clone this repository first:
 
 ```powershell
 git clone https://github.com/Hideousmon/blender-layout-render.git
 cd blender-layout-render
+````
+
+Install the package with Blender's Python:
+
+```powershell
 path-to-blender-python setup.py install
 ```
 
-for example:
+Example:
 
 ```powershell
 S:/Blender/4.1/python/bin/python.exe setup.py install
 ```
 
-### Usage
+## Install Python Dependencies
 
-After installation, you can use it with the Python in Blender, for example:
+### bpy
 
+`bpy` is included in Blender's Python environment, so you usually do not need to install it separately.
+Please make sure you run this project with the Python executable that comes with Blender.
+
+### shapely
+
+Install `shapely` into Blender's Python environment:
+
+```powershell
+path-to-blender-python -m pip install shapely
 ```
+
+Example:
+
+```powershell
+S:/Blender/4.1/python/bin/python.exe -m pip install shapely
+```
+
+
+## Usage
+
+After installation, run scripts with Blender's Python, for example:
+
+```powershell
 S:/Blender/4.1/python/bin/python.exe waveguide_sim_scene.py
 ```
 
-Otherwise, you can set this python as a system python in PyCharm and run it.
+You can also set Blender's Python as the system/interpreter Python in PyCharm and run the scripts there.
 
-> Note: There is something wrong when use it in Blender scripting window.
+> Note: There may be issues when running this project directly in Blender's scripting window.
 
-### Examples
+## Examples
 
-examples can be find in the [examples](https://github.com/Hideousmon/blender-layout-render/tree/main/examples) directory. 
+Examples can be found in the [examples](https://github.com/Hideousmon/blender-layout-render/tree/main/examples) directory.
 
-#### Simulation Scene of a Waveguide
+### Simulation Scene of a Waveguide
 
 [waveguide_sim_scene.py](https://github.com/Hideousmon/blender-layout-render/blob/main/examples/waveguide_sim_scene.py)
 
 ![process](__img/waveguide_sim_scene.png)
 
-#### Layout Schematic of an Integrated PhotSonics Device
+### Layout Schematic of an Integrated Photonics Device
 
 [integration_layout_schematic.py](https://github.com/Hideousmon/blender-layout-render/blob/main/examples/integration_layout_schematic.py)
 
 ![process](__img/integration_layout_schematic.png)
 
-### TODO
+## TODO
 
-1. better color matching.
-2. more materials.
+1. Better color matching
+2. More materials
 3. ...
 
-Pull requests / issues are welcomed.
+Pull requests and issues are welcome.
