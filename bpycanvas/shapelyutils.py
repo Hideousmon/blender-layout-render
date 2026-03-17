@@ -1,7 +1,7 @@
 import bpy
+import bmesh
 from shapely.geometry import Polygon as SPolygon, MultiPolygon, GeometryCollection
-from shapely.ops import unary_union
-
+from shapely.ops import triangulate
 
 def _signed_area_2d(coords):
     area = 0.0
@@ -18,61 +18,147 @@ def _ensure_ccw(coords):
 def _ensure_cw(coords):
     return coords if _signed_area_2d(coords) < 0 else coords[::-1]
 
-def shapely_to_curve_object(geom, name="PolygonResult", z_start=0.0, z_end=1.0):
+
+
+def _add_solidify(obj, z_start, z_end):
+    z_height = abs(z_end - z_start)
+
+    bpy.context.view_layer.objects.active = obj
+    obj.select_set(True)
+
+    solidify_modifier = obj.modifiers.new(name='Solidify', type='SOLIDIFY')
+    solidify_modifier.thickness = z_height
+    solidify_modifier.offset = 1.0 if z_end >= z_start else -1.0
+
+    # 尽量贴近你原来的 mesh 厚化风格
+    if hasattr(solidify_modifier, "use_even_offset"):
+        solidify_modifier.use_even_offset = True
+    if hasattr(solidify_modifier, "use_quality_normals"):
+        solidify_modifier.use_quality_normals = True
+
+    bpy.ops.object.modifier_apply(modifier=solidify_modifier.name)
+    obj.select_set(False)
+    return obj
+
+
+def _polygon_to_mesh_object_no_hole(poly, name="Polygon", z_start=0.0, z_end=1.0):
+    """
+    仅适用于没有孔的 shapely Polygon
+    """
+    mesh = bpy.data.meshes.new(name)
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+
+    bm = bmesh.new()
+
+    coords = list(poly.exterior.coords)[:-1][::-1]
+    bm_verts = [bm.verts.new((x, y, z_start)) for x, y in coords]
+
+    bm.verts.ensure_lookup_table()
+    bm.faces.new(bm_verts)
+
+    bm.to_mesh(mesh)
+    bm.free()
+
+    return _add_solidify(obj, z_start, z_end)
+
+
+def _polygon_to_mesh_object_triangulated(poly, name="Polygon", z_start=0.0, z_end=1.0):
+    """
+    适用于有孔 polygon：先三角化，再建 mesh
+    """
+    mesh = bpy.data.meshes.new(name)
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+
+    bm = bmesh.new()
+    vert_cache = {}
+
+    def get_vert(x, y):
+        key = (round(float(x), 10), round(float(y), 10))
+        if key not in vert_cache:
+            vert_cache[key] = bm.verts.new((x, y, z_start))
+        return vert_cache[key]
+
+    # shapely triangulate 会生成覆盖凸包的三角形，所以要过滤：
+    # 仅保留 “完全落在原 polygon 内部”的三角形
+    tris = triangulate(poly)
+
+    for tri in tris:
+        # 用 representative_point / centroid 过滤都行
+        if not tri.representative_point().within(poly):
+            continue
+
+        coords = list(tri.exterior.coords)[:-1]
+        if len(coords) != 3:
+            continue
+
+        try:
+            face_verts = [get_vert(x, y) for x, y in coords]
+            bm.faces.new(face_verts)
+        except ValueError:
+            # face 已存在时跳过
+            pass
+
+    bm.verts.ensure_lookup_table()
+    bm.faces.ensure_lookup_table()
+
+    bm.to_mesh(mesh)
+    bm.free()
+
+    return _add_solidify(obj, z_start, z_end)
+
+
+def shapely_to_mesh_object(geom, name="PolygonResult", z_start=0.0, z_end=1.0):
+    """
+    Polygon / MultiPolygon / GeometryCollection -> Blender Mesh
+    """
     if geom.is_empty:
         return None
 
-    curve_data = bpy.data.curves.new(name=name, type='CURVE')
-    curve_data.dimensions = '2D'
-    curve_data.fill_mode = 'BOTH'
-    curve_data.extrude = max(0.0, z_end - z_start)
-
-    def add_ring(coords, is_hole=False):
-        coords = list(coords)
-        if len(coords) < 4:
-            return
-
-        coords = coords[:-1]
-
-        coords = _ensure_cw(coords) if is_hole else _ensure_ccw(coords)
-
-        spline = curve_data.splines.new('POLY')
-        spline.points.add(len(coords) - 1)
-        for i, (x, y) in enumerate(coords):
-            spline.points[i].co = (x, y, 0.0, 1.0)
-        spline.use_cyclic_u = True
-
     polygons = []
+
     if geom.geom_type == 'Polygon':
         polygons = [geom]
     elif geom.geom_type == 'MultiPolygon':
         polygons = list(geom.geoms)
     elif geom.geom_type == 'GeometryCollection':
-        polygons = [g for g in geom.geoms if g.geom_type in ('Polygon', 'MultiPolygon')]
+        polygons = [g for g in geom.geoms if g.geom_type == 'Polygon']
     else:
         return None
 
-    for poly in polygons:
-        if poly.geom_type == 'MultiPolygon':
-            for sub_poly in poly.geoms:
-                add_ring(sub_poly.exterior.coords, is_hole=False)
-                for interior in sub_poly.interiors:
-                    add_ring(interior.coords, is_hole=True)
+    created_objs = []
+
+    for idx, poly in enumerate(polygons):
+        if poly.is_empty:
+            continue
+
+        has_holes = len(poly.interiors) > 0
+
+        if has_holes:
+            obj = _polygon_to_mesh_object_triangulated(
+                poly, name=f"{name}_{idx}", z_start=z_start, z_end=z_end
+            )
         else:
-            add_ring(poly.exterior.coords, is_hole=False)
-            for interior in poly.interiors:
-                add_ring(interior.coords, is_hole=True)
+            obj = _polygon_to_mesh_object_no_hole(
+                poly, name=f"{name}_{idx}", z_start=z_start, z_end=z_end
+            )
 
-    obj = bpy.data.objects.new(name, curve_data)
-    bpy.context.collection.objects.link(obj)
-    obj.location.z = z_start
+        created_objs.append(obj)
 
-    bpy.context.view_layer.objects.active = obj
-    obj.select_set(True)
-    bpy.ops.object.convert(target='MESH')
-    obj.select_set(False)
+    if not created_objs:
+        return None
 
-    return obj
+    if len(created_objs) == 1:
+        return created_objs[0]
+
+    bpy.ops.object.select_all(action='DESELECT')
+    for obj in created_objs:
+        obj.select_set(True)
+    bpy.context.view_layer.objects.active = created_objs[0]
+    bpy.ops.object.join()
+
+    return created_objs[0]
 
 def np_polygon_to_shapely(poly_xy):
     pts = [(float(x), float(y)) for x, y in poly_xy]

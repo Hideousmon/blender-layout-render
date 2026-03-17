@@ -138,3 +138,20 @@ def tuple_to_point(input_tuple):
     else:
         raise Exception("Wrong data type input!")
     return output_point
+
+def apply_triangulate(obj, quad_method='BEAUTY', ngon_method='BEAUTY', min_vertices=4):
+    bpy.ops.object.select_all(action='DESELECT')
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+
+    if obj.type != 'MESH':
+        bpy.ops.object.convert(target='MESH')
+
+    mod = obj.modifiers.new(name='Triangulate', type='TRIANGULATE')
+    mod.quad_method = quad_method
+    mod.ngon_method = ngon_method
+    mod.min_vertices = min_vertices
+
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    obj.select_set(False)
+    return obj

@@ -189,16 +189,16 @@ class StackedPolygon:
                     else:
                         result_geom = result_geom.difference(geom)
 
-                # 每一步都尽量修一遍
                 if not result_geom.is_valid:
                     result_geom = result_geom.buffer(0)
 
-            polygon_obj = shapely_to_curve_object(
+            polygon_obj = shapely_to_mesh_object(
                 result_geom,
                 name="polygon_result",
                 z_start=self.z_start,
                 z_end=self.z_end,
             )
+
 
         if not self.material is None:
             material = bpy.data.materials.new(name=self.material["Name"])
