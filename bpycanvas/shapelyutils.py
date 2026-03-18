@@ -1,123 +1,169 @@
 import bpy
 import bmesh
+import numpy as np
+import mapbox_earcut as earcut
 from shapely.geometry import Polygon as SPolygon, MultiPolygon, GeometryCollection
-from shapely.ops import triangulate
 
-def _signed_area_2d(coords):
-    area = 0.0
+import math
+
+def remove_near_duplicate_points(coords, eps=1e-8):
+    if not coords:
+        return coords
+
+    cleaned = [coords[0]]
+    for p in coords[1:]:
+        px, py = cleaned[-1]
+        x, y = p
+        if abs(x - px) > eps or abs(y - py) > eps:
+            cleaned.append((x, y))
+
+    # 如果最后一个和第一个太近，也去掉最后一个
+    if len(cleaned) > 1:
+        x0, y0 = cleaned[0]
+        x1, y1 = cleaned[-1]
+        if abs(x0 - x1) < eps and abs(y0 - y1) < eps:
+            cleaned.pop()
+
+    return cleaned
+
+
+def remove_collinear_points(coords, eps=1e-12):
+    """
+    去掉严格或近似共线的中间点
+    """
+    if len(coords) < 3:
+        return coords
+
+    result = []
     n = len(coords)
+
     for i in range(n):
-        x1, y1 = coords[i]
-        x2, y2 = coords[(i + 1) % n]
-        area += x1 * y2 - x2 * y1
-    return area * 0.5
+        p_prev = coords[i - 1]
+        p = coords[i]
+        p_next = coords[(i + 1) % n]
 
-def _ensure_ccw(coords):
-    return coords if _signed_area_2d(coords) > 0 else coords[::-1]
+        x1, y1 = p_prev
+        x2, y2 = p
+        x3, y3 = p_next
 
-def _ensure_cw(coords):
-    return coords if _signed_area_2d(coords) < 0 else coords[::-1]
+        # 叉积接近 0 -> 共线
+        cross = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)
+
+        if abs(cross) > eps:
+            result.append(p)
+
+    return result
 
 
+def clean_ring(coords, eps_dup=1e-8, eps_collinear=1e-12):
+    coords = list(coords)
 
-def _add_solidify(obj, z_start, z_end):
+    # shapely 的 ring 最后一个点通常和第一个点重复
+    if len(coords) >= 2 and coords[0] == coords[-1]:
+        coords = coords[:-1]
+
+    coords = remove_near_duplicate_points(coords, eps=eps_dup)
+    coords = remove_collinear_points(coords, eps=eps_collinear)
+
+    return coords
+
+def recalc_normals_outside(obj):
+    bpy.ops.object.select_all(action='DESELECT')
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.mesh.normals_make_consistent(inside=False)
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+
+def add_solidify(obj, z_start, z_end):
     z_height = abs(z_end - z_start)
 
-    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.select_all(action='DESELECT')
     obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
 
-    solidify_modifier = obj.modifiers.new(name='Solidify', type='SOLIDIFY')
-    solidify_modifier.thickness = z_height
-    solidify_modifier.offset = 1.0 if z_end >= z_start else -1.0
+    mod = obj.modifiers.new(name='Solidify', type='SOLIDIFY')
+    mod.thickness = z_height
+    mod.offset = 1.0 if z_end >= z_start else -1.0
 
-    # 尽量贴近你原来的 mesh 厚化风格
-    if hasattr(solidify_modifier, "use_even_offset"):
-        solidify_modifier.use_even_offset = True
-    if hasattr(solidify_modifier, "use_quality_normals"):
-        solidify_modifier.use_quality_normals = True
+    if hasattr(mod, "use_even_offset"):
+        mod.use_even_offset = True
+    if hasattr(mod, "use_quality_normals"):
+        mod.use_quality_normals = True
 
-    bpy.ops.object.modifier_apply(modifier=solidify_modifier.name)
+    bpy.ops.object.modifier_apply(modifier=mod.name)
     obj.select_set(False)
     return obj
 
 
-def _polygon_to_mesh_object_no_hole(poly, name="Polygon", z_start=0.0, z_end=1.0):
+def polygon_to_mesh_object_earcut(poly, name="Polygon", z_start=0.0, z_end=1.0):
     """
-    仅适用于没有孔的 shapely Polygon
+    poly: shapely Polygon（支持 holes）
     """
+    if poly.is_empty:
+        return None
+
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(obj)
 
+    rings = []
+
+    ext = clean_ring(poly.exterior.coords, eps_dup=1e-7, eps_collinear=1e-10)
+    if len(ext) >= 3:
+        rings.append(ext)
+
+    for interior in poly.interiors:
+        hole = clean_ring(interior.coords, eps_dup=1e-7, eps_collinear=1e-10)
+        if len(hole) >= 3:
+            rings.append(hole)
+
+    # earcut 输入
+    vertices = []
+    ring_end_indices = []
+    total = 0
+
+    for ring in rings:
+        for x, y in ring:
+            vertices.append([float(x), float(y)])
+        total += len(ring)
+        ring_end_indices.append(total)
+
+    vertices = np.array(vertices, dtype=np.float64)
+    ring_end_indices = np.array(ring_end_indices, dtype=np.uint32)
+
+    # 三角化，返回扁平索引 [i0, i1, i2, i3, i4, i5, ...]
+    tri_indices = earcut.triangulate_float64(vertices, ring_end_indices)
+
     bm = bmesh.new()
-
-    coords = list(poly.exterior.coords)[:-1][::-1]
-    bm_verts = [bm.verts.new((x, y, z_start)) for x, y in coords]
-
+    bm_verts = [bm.verts.new((x, y, z_start)) for x, y in vertices]
     bm.verts.ensure_lookup_table()
-    bm.faces.new(bm_verts)
 
-    bm.to_mesh(mesh)
-    bm.free()
-
-    return _add_solidify(obj, z_start, z_end)
-
-
-def _polygon_to_mesh_object_triangulated(poly, name="Polygon", z_start=0.0, z_end=1.0):
-    """
-    适用于有孔 polygon：先三角化，再建 mesh
-    """
-    mesh = bpy.data.meshes.new(name)
-    obj = bpy.data.objects.new(name, mesh)
-    bpy.context.collection.objects.link(obj)
-
-    bm = bmesh.new()
-    vert_cache = {}
-
-    def get_vert(x, y):
-        key = (round(float(x), 10), round(float(y), 10))
-        if key not in vert_cache:
-            vert_cache[key] = bm.verts.new((x, y, z_start))
-        return vert_cache[key]
-
-    # shapely triangulate 会生成覆盖凸包的三角形，所以要过滤：
-    # 仅保留 “完全落在原 polygon 内部”的三角形
-    tris = triangulate(poly)
-
-    for tri in tris:
-        # 用 representative_point / centroid 过滤都行
-        if not tri.representative_point().within(poly):
-            continue
-
-        coords = list(tri.exterior.coords)[:-1]
-        if len(coords) != 3:
-            continue
-
+    for i in range(0, len(tri_indices), 3):
+        i0, i1, i2 = tri_indices[i:i+3]
         try:
-            face_verts = [get_vert(x, y) for x, y in coords]
-            bm.faces.new(face_verts)
+            bm.faces.new((bm_verts[i0], bm_verts[i1], bm_verts[i2]))
         except ValueError:
-            # face 已存在时跳过
             pass
 
-    bm.verts.ensure_lookup_table()
     bm.faces.ensure_lookup_table()
-
     bm.to_mesh(mesh)
     bm.free()
 
-    return _add_solidify(obj, z_start, z_end)
+    recalc_normals_outside(obj)
+    obj = add_solidify(obj, z_start, z_end)
+    recalc_normals_outside(obj)
+
+    return obj
 
 
-def shapely_to_mesh_object(geom, name="PolygonResult", z_start=0.0, z_end=1.0):
-    """
-    Polygon / MultiPolygon / GeometryCollection -> Blender Mesh
-    """
+def shapely_to_mesh_object_fast(geom, name="PolygonResult", z_start=0.0, z_end=1.0):
     if geom.is_empty:
         return None
 
     polygons = []
-
     if geom.geom_type == 'Polygon':
         polygons = [geom]
     elif geom.geom_type == 'MultiPolygon':
@@ -127,38 +173,41 @@ def shapely_to_mesh_object(geom, name="PolygonResult", z_start=0.0, z_end=1.0):
     else:
         return None
 
-    created_objs = []
-
+    created = []
     for idx, poly in enumerate(polygons):
         if poly.is_empty:
             continue
 
-        has_holes = len(poly.interiors) > 0
+        # 修一下脏几何
+        if not poly.is_valid:
+            poly = poly.buffer(0)
 
-        if has_holes:
-            obj = _polygon_to_mesh_object_triangulated(
-                poly, name=f"{name}_{idx}", z_start=z_start, z_end=z_end
-            )
-        else:
-            obj = _polygon_to_mesh_object_no_hole(
-                poly, name=f"{name}_{idx}", z_start=z_start, z_end=z_end
-            )
+        poly = poly.simplify(1e-4, preserve_topology=True)
 
-        created_objs.append(obj)
+        if poly.is_empty:
+            continue
 
-    if not created_objs:
+        obj = polygon_to_mesh_object_earcut(
+            poly,
+            name=f"{name}_{idx}",
+            z_start=z_start,
+            z_end=z_end,
+        )
+        if obj is not None:
+            created.append(obj)
+
+    if not created:
         return None
 
-    if len(created_objs) == 1:
-        return created_objs[0]
+    if len(created) == 1:
+        return created[0]
 
     bpy.ops.object.select_all(action='DESELECT')
-    for obj in created_objs:
+    for obj in created:
         obj.select_set(True)
-    bpy.context.view_layer.objects.active = created_objs[0]
+    bpy.context.view_layer.objects.active = created[0]
     bpy.ops.object.join()
-
-    return created_objs[0]
+    return created[0]
 
 def np_polygon_to_shapely(poly_xy):
     pts = [(float(x), float(y)) for x, y in poly_xy]

@@ -192,7 +192,7 @@ class StackedPolygon:
                 if not result_geom.is_valid:
                     result_geom = result_geom.buffer(0)
 
-            polygon_obj = shapely_to_mesh_object(
+            polygon_obj = shapely_to_mesh_object_fast(
                 result_geom,
                 name="polygon_result",
                 z_start=self.z_start,

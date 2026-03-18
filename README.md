@@ -5,8 +5,9 @@ A Blender modeling tool with a workflow similar to [SPLayout](https://github.com
 ## Dependencies
 
 - Blender 4.1
-- `bpy` (provided by Blender Python)
+- `bpy`
 - `shapely`
+- `mapbox-earcut`
 
 ## Installation
 
@@ -35,7 +36,14 @@ S:/Blender/4.1/python/bin/python.exe setup.py install
 
 `bpy` is included in Blender's Python environment, so you usually do not need to install it separately.
 Please make sure you run this project with the Python executable that comes with Blender.
+```powershell
+path-to-blender-python -m pip install bpy==4.1.0
+```
+Example:
 
+```powershell
+S:/Blender/4.1/python/bin/python.exe -m pip install bpy==4.1.0
+```
 ### shapely
 
 Install `shapely` into Blender's Python environment:
@@ -48,6 +56,20 @@ Example:
 
 ```powershell
 S:/Blender/4.1/python/bin/python.exe -m pip install shapely
+```
+
+### mapbox-earcut
+
+Install `mapbox-earcut` into Blender's Python environment:
+
+```powershell
+path-to-blender-python -m pip install mapbox-earcut
+```
+
+Example:
+
+```powershell
+S:/Blender/4.1/python/bin/python.exe -m pip install mapbox-earcut
 ```
 
 
