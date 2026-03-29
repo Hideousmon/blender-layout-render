@@ -19,6 +19,8 @@ from .ribbon import Ribbon
 from .couplermzi import PhaseShifter, CouplerMZI, CouplerMZIPlusPhaseShifter, CouplerMZIMesh
 from .serpentineline import SerpentineLine
 from .linesflow import LinesFlow
+from .holeslikesurface import HoldesLikeSurface
+from .multilinesflow import MultiLinesFlow
 
 from .material import *
 from .utils import *
