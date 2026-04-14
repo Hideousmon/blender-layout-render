@@ -182,7 +182,7 @@ def shapely_to_mesh_object_fast(geom, name="PolygonResult", z_start=0.0, z_end=1
         if not poly.is_valid:
             poly = poly.buffer(0)
 
-        poly = poly.simplify(1e-4, preserve_topology=True)
+        poly = poly.simplify(1e-2, preserve_topology=True)
 
         if poly.is_empty:
             continue
